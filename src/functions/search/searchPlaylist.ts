@@ -1,9 +1,9 @@
 import { ArgType, NativeFunction } from "@tryforge/forgescript"
 
 export default new NativeFunction({
-    name: "$searchVideo",
+    name: "$searchPlaylist",
     version: "1.0.0",
-    description: "Searches YouTube videos and returns a JSON array of full video details with filtering options.",
+    description: "Searches YouTube playlists and returns a JSON array of playlist details.",
     brackets: true,
     unwrap: true,
     args: [
@@ -30,7 +30,7 @@ export default new NativeFunction({
         },
         {
             name: "channelId",
-            description: "Only return results from this channel ID",
+            description: "Only return playlists from this channel ID",
             required: false,
             rest: false,
             type: ArgType.String,
@@ -44,13 +44,7 @@ export default new NativeFunction({
         },
     ],
     output: ArgType.String,
-    async execute(ctx, [
-        query,
-        limit,
-        order,
-        channelId,
-        safeSearch
-    ]) {
+    async execute(ctx, [query, limit, order, channelId, safeSearch]) {
         if (!ctx.client.youtube) return this.customError("YouTube API is not configured.")
 
         const amount = Math.floor(limit ?? 5)
@@ -72,9 +66,9 @@ export default new NativeFunction({
         const res = await ctx.client.youtube.search.list({
             part: ["snippet"],
             q: query.trim(),
-            maxResults: amount,
-            type: ["video"],
+            type: ["playlist"],
             order: orderSanitized as any,
+            maxResults: amount,
             channelId: channelId?.trim() || undefined,
             safeSearch: safeSearchSanitized as any
         })
@@ -82,18 +76,17 @@ export default new NativeFunction({
         const results = res.data.items ?? []
         if (!results.length) return this.success(false)
 
-        const videos = results.map(v => ({
-            videoId: v.id?.videoId ?? "unknown",
-            title: v.snippet?.title ?? "Unknown Title",
-            url: `https://www.youtube.com/watch?v=${v.id?.videoId ?? "unknown"}`,
-            channelId: v.snippet?.channelId ?? "unknown",
-            channelTitle: v.snippet?.channelTitle ?? "unknown",
-            publishedAt: v.snippet?.publishedAt ?? "unknown",
-            thumbnail: v.snippet?.thumbnails?.high?.url ?? null,
-            description: v.snippet?.description ?? "",
-            liveBroadcastContent: v.snippet?.liveBroadcastContent ?? "none"
+        const playlists = results.map(p => ({
+            playlistId: p.id?.playlistId ?? "unknown",
+            title: p.snippet?.title ?? "Unknown Title",
+            description: p.snippet?.description ?? "",
+            channelId: p.snippet?.channelId ?? "unknown",
+            channelTitle: p.snippet?.channelTitle ?? "unknown",
+            publishedAt: p.snippet?.publishedAt ?? "unknown",
+            thumbnail: p.snippet?.thumbnails?.high?.url ?? null,
+            url: `https://www.youtube.com/playlist?list=${p.id?.playlistId ?? "unknown"}`,
         }))
 
-        return this.success(JSON.stringify(videos, null, 2))
-    }
+        return this.success(JSON.stringify(playlists, null, 2))
+    },
 })
