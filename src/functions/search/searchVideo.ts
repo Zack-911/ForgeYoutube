@@ -1,9 +1,10 @@
 import { ArgType, NativeFunction } from "@tryforge/forgescript"
-import { searchVideoByQuery } from "../../utils/youtube"
+import { searchVideoByQuery } from "../../utils/search/searchVideoByQuery"
 
 export default new NativeFunction({
     name: "$searchVideo",
-    description: "Searches YouTube videos and returns a human-readable JSON array of video titles and URLs.",
+    version: "1.0.0",
+    description: "Searches YouTube videos and returns a JSON array of video details.",
     brackets: true,
     unwrap: true,
     args: [
@@ -34,8 +35,13 @@ export default new NativeFunction({
         if (!results.length) return this.customError("No videos found.")
 
         const videos = results.map(v => ({
+            videoId: v.id?.videoId ?? "unknown",
             title: v.snippet?.title ?? "Unknown Title",
-            url: `https://www.youtube.com/watch?v=${v.id?.videoId ?? "unknown"}`
+            url: `https://www.youtube.com/watch?v=${v.id?.videoId ?? "unknown"}`,
+            channelId: v.snippet?.channelId ?? "unknown",
+            channelTitle: v.snippet?.channelTitle ?? "unknown",
+            publishedAt: v.snippet?.publishedAt ?? "unknown",
+            thumbnail: v.snippet?.thumbnails?.high?.url ?? null
         }))
 
         return this.success(JSON.stringify(videos, null, 2))
