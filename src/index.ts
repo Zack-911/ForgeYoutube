@@ -37,7 +37,6 @@ export class ForgeSocial extends ForgeExtension {
 
         if (this.config.youtube) {
             this.youtube = await Innertube.create({
-                // optional cookie for auth
                 cookie: this.config.youtube.cookie,
             })
             client.youtube = this.youtube
