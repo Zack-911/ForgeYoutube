@@ -29,6 +29,7 @@
   },
   "dependencies": {
     "googleapis": "^149.0.0",
-    "snoowrap": "^1.23.0"
+    "snoowrap": "^1.23.0",
+    "youtubei.js": "^13.4.0"
   }
 }

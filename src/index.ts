@@ -3,11 +3,12 @@ import { ForgeYoutubeCommandManager } from "./structures/ForgeYoutubeCommandMana
 import { ForgeYoutubeEventManagerName } from "./constants"
 import { IForgeYoutubeEvents } from "./structures/ForgeYoutubeEventHandlers"
 import { TypedEmitter } from "tiny-typed-emitter"
+import { Innertube } from "youtubei.js"
 import { google } from "googleapis"
 
 export interface IForgeSocialOptions {
-    youtube: {
-        apiKey: string
+    youtube?: {
+        cookie?: string // optional auth, can be used for better quota
     }
 }
 
@@ -24,7 +25,7 @@ export class ForgeSocial extends ForgeExtension {
     public readonly emitter = new TypedEmitter<ForgeSocialEventMap<IForgeYoutubeEvents>>()
     public commandManager!: ForgeYoutubeCommandManager
 
-    public youtube?: ReturnType<typeof google.youtube>
+    public youtube?: Innertube
 
     constructor(private readonly config: IForgeSocialOptions) {
         super()
@@ -35,9 +36,9 @@ export class ForgeSocial extends ForgeExtension {
         this.commandManager = new ForgeYoutubeCommandManager(client)
 
         if (this.config.youtube) {
-            this.youtube = google.youtube({
-                version: "v3",
-                auth: this.config.youtube.apiKey,
+            this.youtube = await Innertube.create({
+                // optional cookie for auth
+                cookie: this.config.youtube.cookie,
             })
             client.youtube = this.youtube
         }
@@ -51,6 +52,6 @@ export class ForgeSocial extends ForgeExtension {
 
 declare module "@tryforge/forgescript" {
     interface ForgeClient {
-        youtube?: ReturnType<typeof google.youtube>
+        youtube?: Innertube
     }
 }

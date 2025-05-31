@@ -30,13 +30,6 @@ exports.default = new forgescript_1.NativeFunction({
             type: forgescript_1.ArgType.String,
         },
         {
-            name: "channelId",
-            description: "Only return channels from this channel ID",
-            required: false,
-            rest: false,
-            type: forgescript_1.ArgType.String,
-        },
-        {
             name: "safeSearch",
             description: "Safe search level: none, moderate, strict",
             required: false,
@@ -45,7 +38,7 @@ exports.default = new forgescript_1.NativeFunction({
         },
     ],
     output: forgescript_1.ArgType.String,
-    async execute(ctx, [query, limit, order, channelId, safeSearch]) {
+    async execute(ctx, [query, limit, order, safeSearch]) {
         if (!ctx.client.youtube)
             return this.customError("YouTube API is not configured.");
         const amount = Math.floor(limit ?? 5);
@@ -67,7 +60,6 @@ exports.default = new forgescript_1.NativeFunction({
             type: ["channel"],
             order: orderSanitized,
             maxResults: amount,
-            channelId: channelId?.trim() || undefined,
             safeSearch: safeSearchSanitized
         });
         const results = res.data.items ?? [];

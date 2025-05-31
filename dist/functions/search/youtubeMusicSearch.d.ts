@@ -1,10 +1,16 @@
 import { ArgType, NativeFunction } from "@tryforge/forgescript";
 declare const _default: NativeFunction<[{
     name: string;
-    type: ArgType.String;
-    required: true;
     description: string;
+    required: true;
     rest: false;
+    type: ArgType.String;
+}, {
+    name: string;
+    description: string;
+    required: true;
+    rest: false;
+    type: ArgType.String;
 }], true>;
 export default _default;
-//# sourceMappingURL=getYoutubeVideo.d.ts.map
+//# sourceMappingURL=youtubeMusicSearch.d.ts.map

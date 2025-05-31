@@ -24,7 +24,7 @@ exports.default = new forgescript_1.NativeFunction({
         },
         {
             name: "order",
-            description: "Sort order: date, rating, relevance, title, videoCount, viewCount",
+            description: "Sort order: date, rating, relevance, title, viewCount",
             required: false,
             rest: false,
             type: forgescript_1.ArgType.String,
@@ -53,7 +53,7 @@ exports.default = new forgescript_1.NativeFunction({
             return this.customError("Limit must be at least 1.");
         if (amount > 50)
             return this.customError("Google API does not allow more than 50 results.");
-        const validOrders = ["date", "rating", "relevance", "title", "videoCount", "viewCount"];
+        const validOrders = ["date", "rating", "relevance", "title", "viewCount"];
         const validSafeSearch = ["none", "moderate", "strict"];
         const orderSanitized = order?.trim();
         const safeSearchSanitized = safeSearch?.trim();

@@ -5,7 +5,7 @@ const forgescript_1 = require("@tryforge/forgescript");
 const ForgeYoutubeCommandManager_1 = require("./structures/ForgeYoutubeCommandManager");
 const constants_1 = require("./constants");
 const tiny_typed_emitter_1 = require("tiny-typed-emitter");
-const googleapis_1 = require("googleapis");
+const youtubei_js_1 = require("youtubei.js");
 class ForgeSocial extends forgescript_1.ForgeExtension {
     config;
     name = "forge.youtube";
@@ -23,9 +23,9 @@ class ForgeSocial extends forgescript_1.ForgeExtension {
         this.forgeClient = client;
         this.commandManager = new ForgeYoutubeCommandManager_1.ForgeYoutubeCommandManager(client);
         if (this.config.youtube) {
-            this.youtube = googleapis_1.google.youtube({
-                version: "v3",
-                auth: this.config.youtube.apiKey,
+            this.youtube = await youtubei_js_1.Innertube.create({
+                // optional cookie for auth
+                cookie: this.config.youtube.cookie,
             });
             client.youtube = this.youtube;
         }
