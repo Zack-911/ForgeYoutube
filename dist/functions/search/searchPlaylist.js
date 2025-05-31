@@ -72,7 +72,7 @@ exports.default = new forgescript_1.NativeFunction({
         });
         const results = res.data.items ?? [];
         if (!results.length)
-            return this.success("null");
+            return this.success(false);
         const playlists = results.map(p => ({
             playlistId: p.id?.playlistId ?? "unknown",
             title: p.snippet?.title ?? "Unknown Title",

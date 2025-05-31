@@ -2,9 +2,9 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const forgescript_1 = require("@tryforge/forgescript");
 exports.default = new forgescript_1.NativeFunction({
-    name: "$searchVideo",
+    name: "$searchChannel",
     version: "1.0.0",
-    description: "Searches YouTube videos and returns a JSON array of full video details with filtering options.",
+    description: "Searches YouTube channels and returns a JSON array of channel details.",
     brackets: true,
     unwrap: true,
     args: [
@@ -31,7 +31,7 @@ exports.default = new forgescript_1.NativeFunction({
         },
         {
             name: "channelId",
-            description: "Only return results from this channel ID",
+            description: "Only return channels from this channel ID",
             required: false,
             rest: false,
             type: forgescript_1.ArgType.String,
@@ -64,27 +64,24 @@ exports.default = new forgescript_1.NativeFunction({
         const res = await ctx.client.youtube.search.list({
             part: ["snippet"],
             q: query.trim(),
-            maxResults: amount,
-            type: ["video"],
+            type: ["channel"],
             order: orderSanitized,
+            maxResults: amount,
             channelId: channelId?.trim() || undefined,
             safeSearch: safeSearchSanitized
         });
         const results = res.data.items ?? [];
         if (!results.length)
-            return this.success(false);
-        const videos = results.map(v => ({
-            videoId: v.id?.videoId ?? "unknown",
-            title: v.snippet?.title ?? "Unknown Title",
-            url: `https://www.youtube.com/watch?v=${v.id?.videoId ?? "unknown"}`,
-            channelId: v.snippet?.channelId ?? "unknown",
-            channelTitle: v.snippet?.channelTitle ?? "unknown",
-            publishedAt: v.snippet?.publishedAt ?? "unknown",
-            thumbnail: v.snippet?.thumbnails?.high?.url ?? null,
-            description: v.snippet?.description ?? "",
-            liveBroadcastContent: v.snippet?.liveBroadcastContent ?? "none"
+            return this.customError("No channels found.");
+        const channels = results.map(c => ({
+            channelId: c.snippet?.channelId ?? "unknown",
+            channelTitle: c.snippet?.channelTitle ?? "Unknown Channel",
+            description: c.snippet?.description ?? "",
+            publishedAt: c.snippet?.publishedAt ?? "unknown",
+            thumbnail: c.snippet?.thumbnails?.high?.url ?? null,
+            url: `https://www.youtube.com/channel/${c.snippet?.channelId ?? "unknown"}`
         }));
-        return this.success(JSON.stringify(videos, null, 2));
+        return this.success(JSON.stringify(channels, null, 2));
     }
 });
-//# sourceMappingURL=searchVideo.js.map
+//# sourceMappingURL=searchChannel.js.map
