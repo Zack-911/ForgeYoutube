@@ -10,7 +10,7 @@ declare const _default: NativeFunction<[{
     description: string;
     required: false;
     rest: false;
-    type: ArgType.Number;
+    type: ArgType.String;
 }, {
     name: string;
     description: string;
@@ -31,4 +31,4 @@ declare const _default: NativeFunction<[{
     type: ArgType.String;
 }], true>;
 export default _default;
-//# sourceMappingURL=searchPlaylist.d.ts.map
+//# sourceMappingURL=youtubePlaylistSearch.d.ts.map

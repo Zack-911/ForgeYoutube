@@ -29,6 +29,7 @@ export default new NativeFunction({
     const top = songs.slice(0, 5).map(song => ({
       name: song.title,
       artist: song.artists?.[0]?.name || "Unknown",
+      channelId: song.artists?.[0]?.channel_id || "Unknown",
       id: song.id,
       url: `https://music.youtube.com/watch?v=${song.id}`,
       album: song.album?.name || null,

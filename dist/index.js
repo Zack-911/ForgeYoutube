@@ -24,10 +24,10 @@ class ForgeSocial extends forgescript_1.ForgeExtension {
         this.commandManager = new ForgeYoutubeCommandManager_1.ForgeYoutubeCommandManager(client);
         if (this.config.youtube) {
             this.youtube = await youtubei_js_1.Innertube.create({
-                // optional cookie for auth
                 cookie: this.config.youtube.cookie,
             });
             client.youtube = this.youtube;
+            client.lastPlaylistSearch = undefined;
         }
         forgescript_1.EventManager.load(constants_1.ForgeYoutubeEventManagerName, `${__dirname}/events`);
         this.load(`${__dirname}/functions`);

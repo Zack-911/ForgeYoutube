@@ -23,9 +23,4 @@ export declare class ForgeSocial extends ForgeExtension {
     constructor(config: IForgeSocialOptions);
     init(client: ForgeClient): Promise<void>;
 }
-declare module "@tryforge/forgescript" {
-    interface ForgeClient {
-        youtube?: Innertube;
-    }
-}
 //# sourceMappingURL=index.d.ts.map

@@ -1,0 +1,71 @@
+import { ArgType, NativeFunction } from "@tryforge/forgescript"
+
+export default new NativeFunction({
+  name: "$youtubeChannelSearch",
+  aliases: ["$ytChannelSearch", "$searchYtChannel", "$searchYoutubeChannel"],
+  version: "1.0.0",
+  description: "Searches YouTube and returns the top channels in JSON format.",
+  brackets: true,
+  unwrap: true,
+  args: [
+    {
+      name: "query",
+      description: "The search query to look up on YouTube",
+      required: true,
+      rest: false,
+      type: ArgType.String,
+    },
+    {
+      name: "sortBy",
+      description: "Sort results by: relevance, rating, upload_date, view_count",
+      required: false,
+      rest: false,
+      type: ArgType.String,
+    }
+  ],
+  output: ArgType.Json,
+  async execute(ctx, [query, sortBy]) {
+    const q = query.trim()
+
+    if (!q.length) return this.customError("Query cannot be empty")
+    if (!ctx.client.youtube) return this.customError("YouTube API is not configured")
+
+    const filters: any = { type: "channel" }
+
+    const sb = (sortBy ?? "").trim().toLowerCase()
+    const validSortBy = ["relevance", "rating", "upload_date", "view_count"]
+
+    if (sb && !validSortBy.includes(sb)) return this.customError(`Invalid sortBy: ${sb}`)
+    if (sb) filters.sort_by = sb
+    const start = Date.now()
+    let search
+    try {
+      search = await ctx.client.youtube.search(q, filters)
+    } catch (e: any) {
+      return this.customError("YouTube search failed: " + (e?.message || "unknown error"))
+    }
+
+    const channels = search?.channels || []
+    if (!Array.isArray(channels) || channels.length === 0)
+      return this.customError("No channels found for that query")
+
+    const sliced = channels.slice(0, 5)
+    const result = sliced.map((c: any) => ({
+      id: c.id,
+      name: c.author.name,
+      isModerator: c.author.is_moderator,
+      isVerified: c.author.is_verified,
+      isVerifiedArtist: c.author.is_verified_artist,
+      subscriberCount: c.subscriber_count,
+      videoCount: c.video_count,
+      description: c.description_snippet,
+      url: `https://youtube.com/channel/${c.id}`
+    }))
+    const ping = Date.now() - start
+    return this.success(JSON.stringify({
+      success: true,
+      ping,
+      results: result
+    }, null, 2))
+  }
+})
