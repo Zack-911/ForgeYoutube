@@ -4,7 +4,7 @@ const forgescript_1 = require("@tryforge/forgescript");
 exports.default = new forgescript_1.NativeFunction({
     name: "$youtubePlaylistSearch",
     aliases: ["$ytPlaylistSearch", "$searchYtPlaylist", "$searchYoutubePlaylist"],
-    version: "1.2.0",
+    version: "1.0.0",
     description: "Searches YouTube and returns the top playlists in JSON format. Supports filters.",
     brackets: true,
     unwrap: true,
@@ -74,6 +74,7 @@ exports.default = new forgescript_1.NativeFunction({
             filters.sort_by = sb;
         if (ft.length)
             filters.features = ft.split(",").map(f => f.trim().toLowerCase()).filter(Boolean);
+        const start = Date.now();
         let search;
         try {
             search = await ctx.client.youtube.search(q, filters);
@@ -91,7 +92,10 @@ exports.default = new forgescript_1.NativeFunction({
             videoCount: p.video_count?.text,
             url: `https://youtube.com/playlist?list=${p.content_id}`
         }));
+        const ping = Date.now() - start;
         return this.success(JSON.stringify({
+            success: true,
+            ping,
             results: result
         }, null, 2));
     }

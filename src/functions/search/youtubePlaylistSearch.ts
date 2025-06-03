@@ -3,7 +3,7 @@ import { ArgType, NativeFunction } from "@tryforge/forgescript"
 export default new NativeFunction({
   name: "$youtubePlaylistSearch",
   aliases: ["$ytPlaylistSearch", "$searchYtPlaylist", "$searchYoutubePlaylist"],
-  version: "1.2.0",
+  version: "1.0.0",
   description: "Searches YouTube and returns the top playlists in JSON format. Supports filters.",
   brackets: true,
   unwrap: true,

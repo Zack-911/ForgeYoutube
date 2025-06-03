@@ -3,7 +3,7 @@ import { ArgType, NativeFunction } from "@tryforge/forgescript"
 export default new NativeFunction({
   name: "$youtubeVideoSearch",
   aliases: ["$ytVideoSearch", "$searchYtVideo", "$searchYoutubeVideo"],
-  version: "1.2.3",
+  version: "1.0.0",
   description: "Searches YouTube and returns the top videos in JSON format with execution time. Supports filters.",
   brackets: true,
   unwrap: true,
@@ -69,9 +69,7 @@ export default new NativeFunction({
     if (dr) filters.duration = dr
     if (sb) filters.sort_by = sb
     if (ft.length) filters.features = ft.split(",").map(f => f.trim().toLowerCase()).filter(Boolean)
-
     const start = Date.now()
-
     let search
     try {
       search = await ctx.client.youtube.search(q, filters)
@@ -98,13 +96,11 @@ export default new NativeFunction({
       animatedThumbnail: v.rich_thumbnail,
       url: `https://youtube.com/watch?v=${v.video_id}`
     }))
-
     const ping = Date.now() - start
-
-    return this.success({
+    return this.success(JSON.stringify({
       success: true,
-      ping,
+      ping: ping,
       results: result
-    })
+    }, null, 2))
   }
 })

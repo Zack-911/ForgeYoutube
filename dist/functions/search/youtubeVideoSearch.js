@@ -4,8 +4,8 @@ const forgescript_1 = require("@tryforge/forgescript");
 exports.default = new forgescript_1.NativeFunction({
     name: "$youtubeVideoSearch",
     aliases: ["$ytVideoSearch", "$searchYtVideo", "$searchYoutubeVideo"],
-    version: "1.2.1",
-    description: "Searches YouTube and returns the top videos in JSON format. Supports filters.",
+    version: "1.0.0",
+    description: "Searches YouTube and returns the top videos in JSON format with execution time. Supports filters.",
     brackets: true,
     unwrap: true,
     args: [
@@ -74,6 +74,7 @@ exports.default = new forgescript_1.NativeFunction({
             filters.sort_by = sb;
         if (ft.length)
             filters.features = ft.split(",").map(f => f.trim().toLowerCase()).filter(Boolean);
+        const start = Date.now();
         let search;
         try {
             search = await ctx.client.youtube.search(q, filters);
@@ -99,7 +100,10 @@ exports.default = new forgescript_1.NativeFunction({
             animatedThumbnail: v.rich_thumbnail,
             url: `https://youtube.com/watch?v=${v.video_id}`
         }));
+        const ping = Date.now() - start;
         return this.success(JSON.stringify({
+            success: true,
+            ping: ping,
             results: result
         }, null, 2));
     }

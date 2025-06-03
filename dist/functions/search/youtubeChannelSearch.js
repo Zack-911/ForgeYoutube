@@ -38,6 +38,7 @@ exports.default = new forgescript_1.NativeFunction({
             return this.customError(`Invalid sortBy: ${sb}`);
         if (sb)
             filters.sort_by = sb;
+        const start = Date.now();
         let search;
         try {
             search = await ctx.client.youtube.search(q, filters);
@@ -60,7 +61,10 @@ exports.default = new forgescript_1.NativeFunction({
             description: c.description_snippet,
             url: `https://youtube.com/channel/${c.id}`
         }));
+        const ping = Date.now() - start;
         return this.success(JSON.stringify({
+            success: true,
+            ping,
             results: result
         }, null, 2));
     }

@@ -23,7 +23,7 @@ exports.default = new forgescript_1.NativeFunction({
             return this.customError("Query cannot be empty");
         if (!ctx.client.youtube)
             return this.customError("YouTube API is not configured");
-        const search = await ctx.client.youtube.music.search(searchQuery);
+        const search = await ctx.client.youtube.music.search(searchQuery, { type: 'song' });
         const songs = search.songs?.contents || [];
         if (!songs.length)
             return this.customError("No songs found");
