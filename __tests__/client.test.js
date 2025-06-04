@@ -1,8 +1,8 @@
 const { ForgeClient, LogPriority } = require('@tryforge/forgescript')
-const { ForgeSocial } = require('../dist')
+const { ForgeYoutube } = require('../dist')
 const path = require('path')
 
-const Social = new ForgeSocial({
+const Social = new ForgeYoutube({
   youtube: {
     apiKey: "AIzaSyBR5ruKlz3iRYIHTnkdnmpwY5arDyIMHTE"
   }
@@ -12,7 +12,8 @@ const client = new ForgeClient({
     Social
   ],
   events: [
-    'messageCreate'
+    'messageCreate',
+    'channelUpload'
   ],
   intents: [
     'Guilds',

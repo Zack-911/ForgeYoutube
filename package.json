@@ -23,11 +23,15 @@
   "author": "Zack-911",
   "license": "BSD-3-Clause",
   "devDependencies": {
-    "@tryforge/forgescript": "^2.3.0",
+    "@tryforge/forgescript": "github:tryforge/Forgescript#dev",
+    "@types/express": "^5.0.2",
     "@types/node": "^20.10.6",
     "typescript": "^5.3.3"
   },
   "dependencies": {
+    "@tryforge/forge.api": "github:tryforge/ForgeAPI#dev",
+    "@tryforge/webserver": "^1.0.2",
+    "express": "^5.1.0",
     "googleapis": "^149.0.0",
     "snoowrap": "^1.23.0",
     "youtubei.js": "^13.4.0"

@@ -1,1 +1,1 @@
-export const ForgeYoutubeEventManagerName = "ForgeSocialEvents"
+export const ForgeYoutubeEventManagerName = "forge.youtube"

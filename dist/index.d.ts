@@ -1,6 +1,6 @@
 import { ForgeExtension, ForgeClient } from "@tryforge/forgescript";
 import { ForgeYoutubeCommandManager } from "./structures/ForgeYoutubeCommandManager";
-import { IForgeYoutubeEvents } from "./structures/ForgeYoutubeEventHandlers";
+import { FYEvents } from "./structures/ForgeYoutubeEventHandlers";
 import { TypedEmitter } from "tiny-typed-emitter";
 import { Innertube } from "youtubei.js";
 export interface IForgeSocialOptions {
@@ -8,16 +8,17 @@ export interface IForgeSocialOptions {
         cookie?: string;
     };
 }
-export type ForgeSocialEventMap<T> = {
+export type TransformEvents<T> = {
     [P in keyof T]: T[P] extends any[] ? (...args: T[P]) => any : never;
 };
-export declare class ForgeSocial extends ForgeExtension {
+export declare let forgeSocialInstance: ForgeYoutube | null;
+export declare class ForgeYoutube extends ForgeExtension {
     private readonly config;
     readonly name = "forge.youtube";
     readonly version: any;
     readonly description = "Integration layer for YouTube APIs";
     forgeClient: ForgeClient;
-    readonly emitter: TypedEmitter<ForgeSocialEventMap<IForgeYoutubeEvents>>;
+    emitter: TypedEmitter<TransformEvents<FYEvents>>;
     commandManager: ForgeYoutubeCommandManager;
     youtube?: Innertube;
     constructor(config: IForgeSocialOptions);

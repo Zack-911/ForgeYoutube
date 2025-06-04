@@ -1,7 +1,7 @@
 import { BaseCommandManager } from "@tryforge/forgescript"
-import { IForgeYoutubeEvents } from "./ForgeYoutubeEventHandlers"
+import { FYEvents } from "./ForgeYoutubeEventHandlers"
 import { ForgeYoutubeEventManagerName } from "../constants"
 
-export class ForgeYoutubeCommandManager extends BaseCommandManager<keyof IForgeYoutubeEvents> {
+export class ForgeYoutubeCommandManager extends BaseCommandManager<keyof FYEvents> {
     handlerName = ForgeYoutubeEventManagerName
 }

@@ -1,15 +1,16 @@
-import { BaseEventHandler, ForgeClient } from "@tryforge/forgescript"
-import { ForgeSocial } from ".."
+import { BaseEventHandler, ForgeClient } from '@tryforge/forgescript';
+import { ForgeYoutube } from '..'
 
-export interface IForgeYoutubeEvents {
-    posted: [ any ]
-    error: [ Error ]
-    voted: [ any ]
+export interface FYEvents {
+    channelUpload: [{
+        channelID: any | null
+        videoID: any | null
+    }]
 }
 
-export class ForgeSocialEventHandler<T extends keyof IForgeYoutubeEvents> extends BaseEventHandler<IForgeYoutubeEvents, T> {
+export class FYEventHandler<T extends keyof FYEvents> extends BaseEventHandler<FYEvents, T> {
     register(client: ForgeClient): void {
-        // @ts-ignore
-        client.getExtension(ForgeSocial, true)["emitter"].on(this.name, this.listener.bind(client))
+        //@ts-ignore
+        client.getExtension(ForgeYoutube, true)['emitter'].on(this.name, this.listener.bind(client))
     }
 }

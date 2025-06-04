@@ -1,10 +1,13 @@
-import { BaseEventHandler, ForgeClient } from "@tryforge/forgescript";
-export interface IForgeYoutubeEvents {
-    posted: [any];
-    error: [Error];
-    voted: [any];
+import { BaseEventHandler, ForgeClient } from '@tryforge/forgescript';
+export interface FYEvents {
+    channelUpload: [
+        {
+            channelID: any | null;
+            videoID: any | null;
+        }
+    ];
 }
-export declare class ForgeSocialEventHandler<T extends keyof IForgeYoutubeEvents> extends BaseEventHandler<IForgeYoutubeEvents, T> {
+export declare class FYEventHandler<T extends keyof FYEvents> extends BaseEventHandler<FYEvents, T> {
     register(client: ForgeClient): void;
 }
 //# sourceMappingURL=ForgeYoutubeEventHandlers.d.ts.map

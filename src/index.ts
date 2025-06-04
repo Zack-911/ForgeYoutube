@@ -1,9 +1,10 @@
-import { ForgeExtension, ForgeClient, EventManager } from "@tryforge/forgescript"
-import { ForgeYoutubeCommandManager } from "./structures/ForgeYoutubeCommandManager"
-import { ForgeYoutubeEventManagerName } from "./constants"
-import { IForgeYoutubeEvents } from "./structures/ForgeYoutubeEventHandlers"
-import { TypedEmitter } from "tiny-typed-emitter"
-import { Innertube } from "youtubei.js"
+import { ForgeExtension, ForgeClient, EventManager } from "@tryforge/forgescript";
+import { ForgeYoutubeCommandManager } from "./structures/ForgeYoutubeCommandManager";
+import { ForgeYoutubeEventManagerName } from "./constants";
+import { FYEvents } from "./structures/ForgeYoutubeEventHandlers";
+import { TypedEmitter } from "tiny-typed-emitter";
+import { Innertube } from "youtubei.js";
+import { setupChannelUploadRoute } from "./routes/channelUpload"
 
 export interface IForgeSocialOptions {
     youtube?: {
@@ -11,17 +12,17 @@ export interface IForgeSocialOptions {
     }
 }
 
-export type ForgeSocialEventMap<T> = {
+export type TransformEvents<T> = {
     [P in keyof T]: T[P] extends any[] ? (...args: T[P]) => any : never
 }
 
-export class ForgeSocial extends ForgeExtension {
+export let forgeSocialInstance: ForgeYoutube | null = null
+export class ForgeYoutube extends ForgeExtension {
     readonly name = "forge.youtube"
     readonly version = require("../package.json").version
     readonly description = "Integration layer for YouTube APIs"
-
     public forgeClient!: ForgeClient
-    public readonly emitter = new TypedEmitter<ForgeSocialEventMap<IForgeYoutubeEvents>>()
+    public emitter = new TypedEmitter<TransformEvents<FYEvents>>()
     public commandManager!: ForgeYoutubeCommandManager
     public youtube?: Innertube
 
@@ -32,6 +33,7 @@ export class ForgeSocial extends ForgeExtension {
     async init(client: ForgeClient): Promise<void> {
         this.forgeClient = client
         this.commandManager = new ForgeYoutubeCommandManager(client)
+        forgeSocialInstance = this
 
         if (this.config.youtube) {
             this.youtube = await Innertube.create({
@@ -42,9 +44,10 @@ export class ForgeSocial extends ForgeExtension {
             client.lastPlaylistSearch = undefined
         }
 
-        EventManager.load(ForgeYoutubeEventManagerName, `${__dirname}/events`)
-        this.load(`${__dirname}/functions`)
+        EventManager.load(ForgeYoutubeEventManagerName, __dirname + "/events")
+        this.load(__dirname + "/functions")
 
         client.events.load(ForgeYoutubeEventManagerName)
+        setupChannelUploadRoute(8085)
     }
 }

@@ -3,6 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const forgescript_1 = require("@tryforge/forgescript");
 exports.default = new forgescript_1.NativeFunction({
     name: "$getVideoStats",
+    version: "1.1.0",
     aliases: ["$ytVideoStats", "$youtubeStats", "$getYtStats"],
     description: "Returns views, likes, comments count for a video",
     brackets: true,
