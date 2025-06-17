@@ -1,11 +1,8 @@
-import { BaseEventHandler, ForgeClient } from '@tryforge/forgescript';
+import { BaseEventHandler, ForgeClient } from "@tryforge/forgescript";
+import { channelUpload } from "../types/events";
 export interface FYEvents {
-    channelUpload: [
-        {
-            channelID: any | null;
-            videoID: any | null;
-        }
-    ];
+    channelUpload: [channelUpload];
+    error: [Error];
 }
 export declare class FYEventHandler<T extends keyof FYEvents> extends BaseEventHandler<FYEvents, T> {
     register(client: ForgeClient): void;

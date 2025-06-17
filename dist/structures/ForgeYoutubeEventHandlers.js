@@ -5,8 +5,9 @@ const forgescript_1 = require("@tryforge/forgescript");
 const __1 = require("..");
 class FYEventHandler extends forgescript_1.BaseEventHandler {
     register(client) {
-        //@ts-ignore
-        client.getExtension(__1.ForgeYoutube, true)['emitter'].on(this.name, this.listener.bind(client));
+        const ext = client.getExtension(__1.ForgeYoutube, true);
+        const listener = this.listener.bind(client);
+        ext["emitter"].on(this.name, listener);
     }
 }
 exports.FYEventHandler = FYEventHandler;

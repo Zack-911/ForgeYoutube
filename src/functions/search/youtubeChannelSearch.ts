@@ -16,6 +16,13 @@ export default new NativeFunction({
       type: ArgType.String,
     },
     {
+      name: "limit",
+      description: "Number of channels to return (default 5)",
+      required: false,
+      rest: false,
+      type: ArgType.Number,
+    },
+    {
       name: "sortBy",
       description: "Sort results by: relevance, rating, upload_date, view_count",
       required: false,
@@ -24,11 +31,12 @@ export default new NativeFunction({
     }
   ],
   output: ArgType.Json,
-  async execute(ctx, [query, sortBy]) {
+  async execute(ctx, [query, limit, sortBy]) {
     const q = query.trim()
-
     if (!q.length) return this.customError("Query cannot be empty")
     if (!ctx.client.youtube) return this.customError("YouTube API is not configured")
+
+    const lim = typeof limit === "number" && limit > 0 ? limit : 5
 
     const filters: any = { type: "channel" }
 
@@ -37,6 +45,7 @@ export default new NativeFunction({
 
     if (sb && !validSortBy.includes(sb)) return this.customError(`Invalid sortBy: ${sb}`)
     if (sb) filters.sort_by = sb
+
     const start = Date.now()
     let search
     try {
@@ -49,7 +58,7 @@ export default new NativeFunction({
     if (!Array.isArray(channels) || channels.length === 0)
       return this.customError("No channels found for that query")
 
-    const sliced = channels.slice(0, 5)
+    const sliced = channels.slice(0, lim)
     const result = sliced.map((c: any) => ({
       id: c.id,
       name: c.author.name,
@@ -61,6 +70,7 @@ export default new NativeFunction({
       description: c.description_snippet,
       url: `https://youtube.com/channel/${c.id}`
     }))
+
     const ping = Date.now() - start
     return this.success(JSON.stringify({
       success: true,

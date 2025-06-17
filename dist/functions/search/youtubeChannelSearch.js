@@ -17,6 +17,13 @@ exports.default = new forgescript_1.NativeFunction({
             type: forgescript_1.ArgType.String,
         },
         {
+            name: "limit",
+            description: "Number of channels to return (default 5)",
+            required: false,
+            rest: false,
+            type: forgescript_1.ArgType.Number,
+        },
+        {
             name: "sortBy",
             description: "Sort results by: relevance, rating, upload_date, view_count",
             required: false,
@@ -25,12 +32,13 @@ exports.default = new forgescript_1.NativeFunction({
         }
     ],
     output: forgescript_1.ArgType.Json,
-    async execute(ctx, [query, sortBy]) {
+    async execute(ctx, [query, limit, sortBy]) {
         const q = query.trim();
         if (!q.length)
             return this.customError("Query cannot be empty");
         if (!ctx.client.youtube)
             return this.customError("YouTube API is not configured");
+        const lim = typeof limit === "number" && limit > 0 ? limit : 5;
         const filters = { type: "channel" };
         const sb = (sortBy ?? "").trim().toLowerCase();
         const validSortBy = ["relevance", "rating", "upload_date", "view_count"];
@@ -49,7 +57,7 @@ exports.default = new forgescript_1.NativeFunction({
         const channels = search?.channels || [];
         if (!Array.isArray(channels) || channels.length === 0)
             return this.customError("No channels found for that query");
-        const sliced = channels.slice(0, 5);
+        const sliced = channels.slice(0, lim);
         const result = sliced.map((c) => ({
             id: c.id,
             name: c.author.name,

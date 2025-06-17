@@ -3,7 +3,7 @@ import { ArgType, NativeFunction } from "@tryforge/forgescript"
 export default new NativeFunction({
   name: "$youtubeVideoSearch",
   aliases: ["$ytVideoSearch", "$searchYtVideo", "$searchYoutubeVideo"],
-  version: "1.0.0",
+  version: "1.0.1",
   description: "Searches YouTube and returns the top videos in JSON format with execution time. Supports filters.",
   brackets: true,
   unwrap: true,
@@ -14,6 +14,13 @@ export default new NativeFunction({
       required: true,
       rest: false,
       type: ArgType.String,
+    },
+    {
+      name: "limit",
+      description: "Maximum number of videos to return (default 5, max 25)",
+      required: false,
+      rest: false,
+      type: ArgType.Number,
     },
     {
       name: "uploadDate",
@@ -45,7 +52,7 @@ export default new NativeFunction({
     }
   ],
   output: ArgType.Json,
-  async execute(ctx, [query, uploadDate, duration, sortBy, features]) {
+  async execute(ctx, [query, limit, uploadDate, duration, sortBy, features]) {
     const q = query.trim()
     if (!q.length) return this.customError("Query cannot be empty")
     if (!ctx.client.youtube) return this.customError("YouTube API is not configured")
@@ -56,6 +63,7 @@ export default new NativeFunction({
     const dr = (duration ?? "").trim().toLowerCase()
     const sb = (sortBy ?? "").trim().toLowerCase()
     const ft = (features ?? "").trim()
+    const lim = Math.max(1, Math.min(Number(limit) || 5, 25))
 
     const validUploadDates = ["all", "hour", "today", "week", "month", "year"]
     const validDurations = ["all", "short", "medium", "long"]
@@ -69,6 +77,7 @@ export default new NativeFunction({
     if (dr) filters.duration = dr
     if (sb) filters.sort_by = sb
     if (ft.length) filters.features = ft.split(",").map(f => f.trim().toLowerCase()).filter(Boolean)
+
     const start = Date.now()
     let search
     try {
@@ -81,12 +90,13 @@ export default new NativeFunction({
     if (!Array.isArray(videos) || videos.length === 0)
       return this.customError("No videos found for that query")
 
-    const sliced = videos.slice(0, 5)
+    const sliced = videos.slice(0, lim)
     const result = sliced.map((v: any) => ({
       id: v.video_id,
       title: v.title?.text,
       description: v.description,
       duration: v.duration?.text,
+      durationSeconds: v.duration?.seconds,
       views: v.view_count?.text,
       published: v.published?.text,
       isLive: v.is_live,

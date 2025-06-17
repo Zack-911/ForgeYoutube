@@ -15,19 +15,27 @@ exports.default = new forgescript_1.NativeFunction({
             rest: false,
             type: forgescript_1.ArgType.String,
         },
+        {
+            name: "limit",
+            description: "Number of songs to return (default 5)",
+            required: false,
+            rest: false,
+            type: forgescript_1.ArgType.Number,
+        }
     ],
     output: forgescript_1.ArgType.String,
-    async execute(ctx, [query]) {
+    async execute(ctx, [query, limit]) {
         const searchQuery = query.trim();
         if (!searchQuery.length)
             return this.customError("Query cannot be empty");
         if (!ctx.client.youtube)
             return this.customError("YouTube API is not configured");
+        const lim = typeof limit === "number" && limit > 0 ? limit : 5;
         const search = await ctx.client.youtube.music.search(searchQuery, { type: 'song' });
         const songs = search.songs?.contents || [];
         if (!songs.length)
             return this.customError("No songs found");
-        const top = songs.slice(0, 5).map(song => ({
+        const top = songs.slice(0, lim).map(song => ({
             name: song.title,
             artist: song.artists?.[0]?.name || "Unknown",
             channelId: song.artists?.[0]?.channel_id || "Unknown",

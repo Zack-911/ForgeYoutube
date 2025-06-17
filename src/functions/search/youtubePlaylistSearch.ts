@@ -3,7 +3,7 @@ import { ArgType, NativeFunction } from "@tryforge/forgescript"
 export default new NativeFunction({
   name: "$youtubePlaylistSearch",
   aliases: ["$ytPlaylistSearch", "$searchYtPlaylist", "$searchYoutubePlaylist"],
-  version: "1.0.0",
+  version: "1.1.0",
   description: "Searches YouTube and returns the top playlists in JSON format. Supports filters.",
   brackets: true,
   unwrap: true,
@@ -14,6 +14,13 @@ export default new NativeFunction({
       required: true,
       rest: false,
       type: ArgType.String,
+    },
+    {
+      name: "limit",
+      description: "Number of playlists to return (default: 5)",
+      required: false,
+      rest: false,
+      type: ArgType.Number,
     },
     {
       name: "uploadDate",
@@ -45,8 +52,9 @@ export default new NativeFunction({
     }
   ],
   output: ArgType.Json,
-  async execute(ctx, [query, uploadDate, duration, sortBy, features]) {
+  async execute(ctx, [query, limit, uploadDate, duration, sortBy, features]) {
     const q = query.trim()
+    const max = Number(limit) || 5
 
     if (!q.length) return this.customError("Query cannot be empty")
     if (!ctx.client.youtube) return this.customError("YouTube API is not configured")
@@ -70,6 +78,7 @@ export default new NativeFunction({
     if (dr) filters.duration = dr
     if (sb) filters.sort_by = sb
     if (ft.length) filters.features = ft.split(",").map(f => f.trim().toLowerCase()).filter(Boolean)
+
     const start = Date.now()
     let search
     try {
@@ -82,13 +91,15 @@ export default new NativeFunction({
     if (!Array.isArray(playlists) || playlists.length === 0)
       return this.customError("No playlists found for that query")
 
-    const sliced = playlists.slice(0, 5)
+    const sliced = playlists.slice(0, max)
     const result = sliced.map((p: any) => ({
       type: p.content_type,
+      title: p.metadata.title.text,
       id: p.content_id,
       videoCount: p.video_count?.text,
       url: `https://youtube.com/playlist?list=${p.content_id}`
     }))
+
     const ping = Date.now() - start
     return this.success(JSON.stringify({
       success: true,

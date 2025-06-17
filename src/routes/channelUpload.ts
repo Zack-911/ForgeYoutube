@@ -1,6 +1,6 @@
 import { app } from "@tryforge/webserver"
 import type { Request, Response } from "express"
-import { forgeSocialInstance } from ".."
+import { ForgeYoutubeInstance } from ".."
 import express from "express"
 
 export function setupChannelUploadRoute(port: number) {
@@ -19,8 +19,8 @@ export function setupChannelUploadRoute(port: number) {
       return
     }
 
-    if (forgeSocialInstance) {
-      forgeSocialInstance.emitter.emit("channelUpload", { channelID, videoID })
+    if (ForgeYoutubeInstance) {
+      ForgeYoutubeInstance.emitter.emit("channelUpload", { channelID, videoID })
     } else {
       console.warn("ForgeYoutube instance is not initialized yet")
     }

@@ -4,7 +4,7 @@ const forgescript_1 = require("@tryforge/forgescript");
 exports.default = new forgescript_1.NativeFunction({
     name: "$youtubeVideoSearch",
     aliases: ["$ytVideoSearch", "$searchYtVideo", "$searchYoutubeVideo"],
-    version: "1.0.0",
+    version: "1.0.1",
     description: "Searches YouTube and returns the top videos in JSON format with execution time. Supports filters.",
     brackets: true,
     unwrap: true,
@@ -15,6 +15,13 @@ exports.default = new forgescript_1.NativeFunction({
             required: true,
             rest: false,
             type: forgescript_1.ArgType.String,
+        },
+        {
+            name: "limit",
+            description: "Maximum number of videos to return (default 5, max 25)",
+            required: false,
+            rest: false,
+            type: forgescript_1.ArgType.Number,
         },
         {
             name: "uploadDate",
@@ -46,7 +53,7 @@ exports.default = new forgescript_1.NativeFunction({
         }
     ],
     output: forgescript_1.ArgType.Json,
-    async execute(ctx, [query, uploadDate, duration, sortBy, features]) {
+    async execute(ctx, [query, limit, uploadDate, duration, sortBy, features]) {
         const q = query.trim();
         if (!q.length)
             return this.customError("Query cannot be empty");
@@ -57,6 +64,7 @@ exports.default = new forgescript_1.NativeFunction({
         const dr = (duration ?? "").trim().toLowerCase();
         const sb = (sortBy ?? "").trim().toLowerCase();
         const ft = (features ?? "").trim();
+        const lim = Math.max(1, Math.min(Number(limit) || 5, 25));
         const validUploadDates = ["all", "hour", "today", "week", "month", "year"];
         const validDurations = ["all", "short", "medium", "long"];
         const validSortBy = ["relevance", "rating", "upload_date", "view_count"];
@@ -85,12 +93,13 @@ exports.default = new forgescript_1.NativeFunction({
         const videos = search?.videos || [];
         if (!Array.isArray(videos) || videos.length === 0)
             return this.customError("No videos found for that query");
-        const sliced = videos.slice(0, 5);
+        const sliced = videos.slice(0, lim);
         const result = sliced.map((v) => ({
             id: v.video_id,
             title: v.title?.text,
             description: v.description,
             duration: v.duration?.text,
+            durationSeconds: v.duration?.seconds,
             views: v.view_count?.text,
             published: v.published?.text,
             isLive: v.is_live,

@@ -3,51 +3,55 @@ import { ForgeYoutubeCommandManager } from "./structures/ForgeYoutubeCommandMana
 import { ForgeYoutubeEventManagerName } from "./constants";
 import { FYEvents } from "./structures/ForgeYoutubeEventHandlers";
 import { TypedEmitter } from "tiny-typed-emitter";
-import { Innertube } from "youtubei.js";
-import { setupChannelUploadRoute } from "./routes/channelUpload"
+import { Innertube, ClientType } from "youtubei.js";
 
-export interface IForgeSocialOptions {
+export interface IForgeYoutubeOptions {
     youtube?: {
-        cookie?: string
-    }
+        cookie?: string;
+    };
+    events?: Array<keyof FYEvents>;
 }
 
 export type TransformEvents<T> = {
-    [P in keyof T]: T[P] extends any[] ? (...args: T[P]) => any : never
-}
+    [P in keyof T]: T[P] extends any[] ? (...args: T[P]) => any : never;
+};
 
-export let forgeSocialInstance: ForgeYoutube | null = null
+export let ForgeYoutubeInstance: ForgeYoutube | null = null;
+
 export class ForgeYoutube extends ForgeExtension {
-    readonly name = "forge.youtube"
-    readonly version = require("../package.json").version
-    readonly description = "Integration layer for YouTube APIs"
-    public forgeClient!: ForgeClient
-    public emitter = new TypedEmitter<TransformEvents<FYEvents>>()
-    public commandManager!: ForgeYoutubeCommandManager
-    public youtube?: Innertube
+    readonly name = "forge.youtube";
+    readonly version = require("../package.json").version;
+    readonly description = "Integration layer for YouTube APIs";
 
-    constructor(private readonly config: IForgeSocialOptions) {
-        super()
+    public client!: ForgeClient;
+    public emitter = new TypedEmitter<TransformEvents<FYEvents>>();
+    public commandManager!: ForgeYoutubeCommandManager;
+    public youtube?: Innertube;
+
+    constructor(private readonly config: IForgeYoutubeOptions) {
+        super();
     }
 
     async init(client: ForgeClient): Promise<void> {
-        this.forgeClient = client
-        this.commandManager = new ForgeYoutubeCommandManager(client)
-        forgeSocialInstance = this
+        this.client = client;
+        this.commandManager = new ForgeYoutubeCommandManager(client);
+        ForgeYoutubeInstance = this;
 
         if (this.config.youtube) {
             this.youtube = await Innertube.create({
                 cookie: this.config.youtube.cookie,
-            })
+            });
 
-            client.youtube = this.youtube
-            client.lastPlaylistSearch = undefined
+            client.youtube = this.youtube;
+            client.lastPlaylistSearch = undefined;
         }
 
-        EventManager.load(ForgeYoutubeEventManagerName, __dirname + "/events")
-        this.load(__dirname + "/functions")
+        EventManager.load(ForgeYoutubeEventManagerName, __dirname + "/events");
+        this.load(__dirname + "/functions");
 
-        client.events.load(ForgeYoutubeEventManagerName)
-        setupChannelUploadRoute(8085)
+        if (this.config.events?.length)
+            this.client.events.load(ForgeYoutubeEventManagerName, this.config.events);
+        else
+            this.client.events.load(ForgeYoutubeEventManagerName);
     }
 }
