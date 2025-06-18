@@ -1,5 +1,4 @@
 import { ArgType, NativeFunction } from "@tryforge/forgescript"
-import type { Innertube } from "youtubei.js"
 import type { PlaylistVideo } from "youtubei.js/dist/src/parser/nodes"
 
 export default new NativeFunction({
@@ -29,7 +28,7 @@ export default new NativeFunction({
     const id = String(playlistId || "").trim()
     if (!id) return this.customError("Missing playlist ID")
 
-    const youtube = ctx.client.youtube as Innertube
+    const youtube = ctx.client.youtube
     if (!youtube) return this.customError("YouTube client not available")
 
     const feed = await youtube.getPlaylist(id).catch(() => null)

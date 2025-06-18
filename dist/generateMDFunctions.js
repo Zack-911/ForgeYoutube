@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.generateDocsFromMetadata = generateDocsFromMetadata;
+exports.generateDocsFromMetadata = void 0;
 const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
 function generateDocsFromMetadata(filePath) {
@@ -15,7 +15,7 @@ function generateDocsFromMetadata(filePath) {
             grouped.set(entry.category, []);
         grouped.get(entry.category).push(entry);
     }
-    let output = "# ForgeScheduler Native Functions\n\n";
+    let output = "# ForgeYoutube Functions\n\n";
     for (const [category, entries] of grouped) {
         output += `## ${category[0].toUpperCase()}${category.slice(1)}\n\n`;
         for (const entry of entries) {
@@ -36,4 +36,5 @@ function generateDocsFromMetadata(filePath) {
     }
     return output;
 }
+exports.generateDocsFromMetadata = generateDocsFromMetadata;
 //# sourceMappingURL=generateMDFunctions.js.map

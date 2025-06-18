@@ -1,8 +1,9 @@
 import { ArgType, NativeFunction } from "@tryforge/forgescript"
+import type { MusicQueue } from "youtubei.js/dist/src/parser/nodes"
 
 export default new NativeFunction({
   name: "$getLatestVideo",
-  version: "1.0.0",
+  version: "1.0.3",
   description: "Gets the most recent video from a YouTube channel.",
   brackets: true,
   unwrap: true,
@@ -20,20 +21,24 @@ export default new NativeFunction({
     const channel = String(id || "").trim()
     const yt = ctx.client.youtube
     if (!yt) return this.customError("YouTube is not configured.")
-
     try {
       const page = await yt.getChannel(channel)
-      const videos = await page.getVideos()
-      const latest = videos.items?.[0]
-      if (!latest) return this.customError("No videos found.")
+      const videosTab = await page.getVideos()
+      const section = videosTab.current_tab?.content
+
+      if (!section || section.type == "MusicQueue")
+        return this.customError("Expected MusicQueue in channel videos tab.")
+
+      const MusicQueue = section as MusicQueue
+      const items = MusicQueue.content
+
+      if (!Array.isArray(items) || items.length === 0)
+        return this.customError("No videos found.")
+
+      const latest = items[0] as any
 
       return this.success(JSON.stringify({
-        id: latest.id,
-        title: latest.title,
-        duration: latest.duration,
-        views: latest.view_count,
-        uploaded: latest.published,
-        url: `https://www.youtube.com/watch?v=${latest.id}`
+        id: latest,
       }, null, 2))
     } catch (err) {
       return this.customError("Failed to fetch latest video: " + (err as Error).message)

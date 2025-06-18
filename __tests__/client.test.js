@@ -27,4 +27,4 @@ const client = new ForgeClient({
 
 client.commands.load('./__tests__/commands')
 
-client.login('MTMzOTYyMTMzNjc3NDg3MzA4OA.GXPZeX.u4EVi_NdUppIAjnwMEFfydTuEDUHKrC6YXA7ls')
+client.login('')

@@ -1,14 +1,37 @@
-# ForgeYoutube Native Functions
+# ForgeYoutube Functions
 
 ## Get
 
-### $youtubeDownload (v1.1.0)
-Downloads a YouTube video and saves it to the given file path.
+### $downloadVideoFromUrl (v1.0.1)
+Downloads a video file from a direct URL with custom filename and path.
 
 **Arguments:**
 
-- `videoID` (String, required) - The ID of the YouTube video
-- `filePath` (String, required) - Where to save the downloaded file
+- `url` (String, required) - Direct video file URL (e.g. https://domain.com/video)
+- `path` (String, required) - Subdirectory to save in (relative to project root)
+- `filename` (String, required) - Name of the file to save as (no extension)
+
+**Returns:** `Json`
+**Brackets:** `true`
+**Unwrap:** `true`
+
+### $youtubeStreamLink (v1.0.0)
+Returns the direct video stream URL for a given YouTube video ID.
+
+**Arguments:**
+
+- `videoId` (String, required) - YouTube video ID (e.g., dQw4w9WgXcQ)
+
+**Returns:** `String`
+**Brackets:** `true`
+**Unwrap:** `true`
+
+### $getLatestVideo (v1.0.3)
+Gets the most recent video from a YouTube channel.
+
+**Arguments:**
+
+- `channel` (String, required) - Channel ID or handle (e.g. UC... or @username)
 
 **Returns:** `Json`
 **Brackets:** `true`
@@ -39,12 +62,34 @@ Fetches lyrics for a YouTube Music track (video ID)
 
 ## Info
 
+### $extractVideoID (v1.0.0)
+Extracts a YouTube video ID from a URL or string.
+
+**Arguments:**
+
+- `input` (String, required) - YouTube URL or video ID
+
+**Returns:** `String`
+**Brackets:** `true`
+**Unwrap:** `true`
+
 ### $getVideoCaptions (v1.1.0)
 Returns the available captions/subtitles for a YouTube video by its ID.
 
 **Arguments:**
 
 - `videoID` (String, required) - The ID of the YouTube video
+
+**Returns:** `Json`
+**Brackets:** `true`
+**Unwrap:** `true`
+
+### $getChannelInfo (v1.0.0)
+Gets info about a YouTube channel by ID or handle.
+
+**Arguments:**
+
+- `identifier` (String, required) - Channel ID or handle (e.g. UC... or @username)
 
 **Returns:** `Json`
 **Brackets:** `true`

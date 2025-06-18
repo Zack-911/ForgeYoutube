@@ -11,6 +11,12 @@ declare const _default: NativeFunction<[{
     required: true;
     rest: false;
     type: ArgType.String;
+}, {
+    name: string;
+    description: string;
+    required: true;
+    rest: false;
+    type: ArgType.String;
 }], true>;
 export default _default;
 //# sourceMappingURL=download.d.ts.map

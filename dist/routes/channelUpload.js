@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.setupChannelUploadRoute = setupChannelUploadRoute;
+exports.setupChannelUploadRoute = void 0;
 const webserver_1 = require("@tryforge/webserver");
 const __1 = require("..");
 const express_1 = __importDefault(require("express"));
@@ -28,4 +28,5 @@ function setupChannelUploadRoute(port) {
     });
     return server;
 }
+exports.setupChannelUploadRoute = setupChannelUploadRoute;
 //# sourceMappingURL=channelUpload.js.map

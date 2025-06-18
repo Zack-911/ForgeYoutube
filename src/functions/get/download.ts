@@ -1,75 +1,78 @@
 import { ArgType, NativeFunction } from "@tryforge/forgescript"
-import fs from "fs"
-import path from "path"
-import { Readable } from "stream"
+import { createWriteStream, mkdirSync, existsSync } from "fs"
+import { join } from "path"
+import { request } from "undici"
+import { performance } from "perf_hooks"
 
 export default new NativeFunction({
-  name: "$youtubeDownload",
-    version: "1.1.0",
-  description: "Downloads a YouTube video and saves it to the given file path.",
+  name: "$downloadVideoFromUrl",
+  version: "1.0.1",
+  description: "Downloads a video file from a direct URL with custom filename and path.",
   brackets: true,
   unwrap: true,
   args: [
     {
-      name: "videoID",
-      description: "The ID of the YouTube video",
+      name: "url",
+      description: "Direct video file URL (e.g. https://domain.com/video)",
       required: true,
       rest: false,
-      type: ArgType.String,
+      type: ArgType.String
     },
     {
-      name: "filePath",
-      description: "Where to save the downloaded file",
+      name: "path",
+      description: "Subdirectory to save in (relative to project root)",
       required: true,
       rest: false,
-      type: ArgType.String,
+      type: ArgType.String
     },
+    {
+      name: "filename",
+      description: "Name of the file to save as (no extension)",
+      required: true,
+      rest: false,
+      type: ArgType.String
+    }
   ],
   output: ArgType.Json,
-  async execute(ctx, [videoID, filePath]) {
-    const id = String(videoID || "").trim()
-    let location = String(filePath || "").trim()
+  async execute(ctx, [url, folder, name]) {
+    const videoUrl = String(url || "").trim()
+    const savePath = String(folder || "").trim()
+    const filename = String(name || "").trim()
 
-    if (!id) return this.customError("No video ID provided.")
-    if (!location) return this.customError("No file path provided.")
+    if (!/^https?:\/\//.test(videoUrl))
+      return this.customError("Invalid URL")
 
-    if (!location.endsWith(".mp4")) location += ".mp4"
-
-    const youtube = ctx.client.youtube
-    if (!youtube) return this.customError("YouTube is not configured on this client.")
-
-    const start = Date.now()
+    if (!filename.length || !savePath.length)
+      return this.customError("Missing path or filename")
 
     try {
-      const info = await youtube.getInfo(id)
-      if (!info.streaming_data) return this.customError("This video cannot be downloaded (no streaming data).")
+      const start = performance.now()
 
-      await new Promise(res => setTimeout(res, 10000))
+      const ext = "mp4"
+      const relativeDir = join(process.cwd(), savePath)
+      if (!existsSync(relativeDir)) mkdirSync(relativeDir, { recursive: true })
 
-      const webStream = await youtube.download(id)
-      if (!webStream) return this.customError("Could not get download stream.")
+      const filePath = join(relativeDir, `${filename}.${ext}`)
 
-      const nodeStream = Readable.fromWeb(webStream as any)
-      const fullPath = path.resolve(location)
-      const writer = fs.createWriteStream(fullPath)
+      const res = await request(videoUrl)
+      const stream = createWriteStream(filePath)
 
       await new Promise((resolve, reject) => {
-        nodeStream.pipe(writer)
-        writer.on("finish", resolve)
-        writer.on("error", reject)
+        res.body.pipe(stream)
+        res.body.on("error", reject)
+        stream.on("finish", resolve)
       })
 
-      const size = fs.statSync(fullPath).size
-      const ping = Date.now() - start
+      const end = performance.now()
+      const ms = Math.round(end - start)
 
       return this.success(JSON.stringify({
-        result: true,
-        ping,
-        file: fullPath,
-        size
+        path: `./${savePath}/${filename}.${ext}`,
+        ping: `${ms}`,
+        success: true
       }, null, 2))
     } catch (err) {
-      return this.customError("Download failed: " + (err as Error).toString())
+      return this.customError("Download failed: " + (err as Error).message)
     }
-  },
+  }
 })

@@ -31,7 +31,7 @@ export function generateDocsFromMetadata(filePath: string): string {
     grouped.get(entry.category)!.push(entry)
   }
 
-  let output = "# ForgeScheduler Native Functions\n\n"
+  let output = "# ForgeYoutube Functions\n\n"
 
   for (const [category, entries] of grouped) {
     output += `## ${category[0].toUpperCase()}${category.slice(1)}\n\n`
