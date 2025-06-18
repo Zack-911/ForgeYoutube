@@ -1,4 +1,3 @@
-import { FYEventHandler } from "../structures/ForgeYoutubeEventHandlers";
-declare const _default: FYEventHandler<"channelUpload">;
+declare const _default: any;
 export default _default;
 //# sourceMappingURL=channelUpload.d.ts.map
