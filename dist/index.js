@@ -14,6 +14,7 @@ class ForgeYoutube extends forgescript_1.ForgeExtension {
         this.client = client;
         exports.ForgeYoutubeInstance = this;
         this.youtube = await youtubei_js_1.Innertube.create();
+        youtubei_js_1.Log.setLevel(youtubei_js_1.Log.Level.NONE);
         client.youtube = this.youtube;
         client.lastPlaylistSearch = undefined;
         this.load(__dirname + "/functions");

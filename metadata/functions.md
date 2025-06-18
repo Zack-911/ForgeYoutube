@@ -26,17 +26,6 @@ Returns the direct video stream URL for a given YouTube video ID.
 **Brackets:** `true`
 **Unwrap:** `true`
 
-### $getLatestVideo (v1.0.3)
-Gets the most recent video from a YouTube channel.
-
-**Arguments:**
-
-- `channel` (String, required) - Channel ID or handle (e.g. UC... or @username)
-
-**Returns:** `Json`
-**Brackets:** `true`
-**Unwrap:** `true`
-
 ### $getPlaylistItems (v1.0.0)
 Fetches items (videos) from a playlist
 

@@ -1,5 +1,5 @@
-import { ForgeExtension, ForgeClient } from "@tryforge/forgescript";
-import { Innertube } from "youtubei.js";
+import { ForgeExtension, ForgeClient, Logger } from "@tryforge/forgescript";
+import { Innertube, Log } from "youtubei.js";
 
 export let ForgeYoutubeInstance: ForgeYoutube | null = null;
 
@@ -16,6 +16,7 @@ export class ForgeYoutube extends ForgeExtension {
         ForgeYoutubeInstance = this;
 
             this.youtube = await Innertube.create();
+            Log.setLevel(Log.Level.NONE);
 
             client.youtube = this.youtube;
             client.lastPlaylistSearch = undefined;
